@@ -15,8 +15,11 @@ class MainActivity : AppCompatActivity() {
     private val btn_mul : Button by lazy {findViewById<Button>(R.id.main_button_multiplication) as Button}
 
     private var firstNumber : Float? = null
+    private var firstNumberConstructor: String = ""
     private var secondNumber : Int = 0
-    private var operation : String = "Sum"
+    private var secondNumberConstructor: String = ""
+    private lateinit var operation : String
+    private var second: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,21 +71,42 @@ class MainActivity : AppCompatActivity() {
     fun buttonNumberClickEvent(view: View){
         val value = view.tag.toString().toInt()
 
-        if(firstNumber == null){
-            firstNumber = value.toFloat()
+        if(firstNumberConstructor == ""){
+            //firstNumber = value.toFloat()
 
-            text_view.text = firstNumber.toString()
+            firstNumberConstructor = value.toString()
+            text_view.text = firstNumberConstructor
+        }
+        else if(firstNumberConstructor != "" && !this::operation.isInitialized){
+            firstNumberConstructor += value.toString()
+            text_view.text = firstNumberConstructor
         }
         else{
-            secondNumber = value
+            secondNumberConstructor += value.toString()
+
+            secondNumber = secondNumberConstructor.toInt()
 
             var calculatedNumber = calculateNumber(operation)
-            firstNumber = calculatedNumber
 
-            text_view.text = "$firstNumber"
+            text_view.text = "$firstNumber ${getSymbol()} $secondNumberConstructor = $calculatedNumber"
+            second = true
+
+            firstNumberConstructor = calculatedNumber.toString()
+
+            //text_view.text = "$firstNumber"
 
             //Toast.makeText(this, "${calculatedNumber}", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    fun getSymbol(): String{
+        when(operation){
+            "Sum" -> return "+"
+            "Div" -> return "/"
+            "Sub" -> return "-"
+            "Mul" -> return "*"
+        }
+        return "Ola"
     }
 
     // função para receber todos os butões - apartir da tag
@@ -96,7 +120,8 @@ class MainActivity : AppCompatActivity() {
 //        val mul = btn_mul.tag.toString()
 
         operation = view.tag.toString()
-
+        firstNumber = firstNumberConstructor.toFloat()
+        secondNumberConstructor = ""
         when(operation){
             "Sum" -> text_view.text = "${text_view.text } + "
             "Div" -> text_view.text = "${text_view.text } / "
